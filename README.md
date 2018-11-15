@@ -7,7 +7,7 @@ This project is written in Python 3.x and uses a virtual environment.
 Create a Python 3.x virtual environment and install the necessary requirements:
 ```
 python3 -m venv env
-source ./env/bin/activate
+source ./env/bin/activate # You must run this in every fresh session.
 pip3 install -r ./requirements.txt
 ```
 

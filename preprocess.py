@@ -2,6 +2,7 @@
 import csv
 import json
 import sys
+import numpy as np
 
 csv.field_size_limit(sys.maxsize)
 
@@ -60,13 +61,6 @@ except:
     with open('data/crew.json', 'w') as crew_file:
         json.dump(crew_storage, crew_file)
 
-index = 0
-for key in crew_storage.keys():
-    index += 1
-    if index >= 100:
-        break
-    print(key, crew_storage[key])
-
 try:
     with open('data/films.json', 'r') as films_file:
         print('Loading cached data/films.json ...')
@@ -93,9 +87,11 @@ except:
             film['startYear'] = row[5]
             if row[7] == '\\N':
                 continue # Null field, skip to next.
-            film['runtimeMinutes'] = row[7] # TODO: delete null rows
+            film['runtimeMinutes'] = int(row[7])
 
             parse_genres(film, row[8])
+            film['averageRating'] = 0
+            film['numVotes'] = 0
             film['directorsExperience'] = 0
             film['actorsExperience'] = 0
 
@@ -130,67 +126,79 @@ except:
     with open('data/films.json', 'w') as films_file:
         json.dump(film_storage, films_file)
 
-print('Loading data/title.principals.tsv ...')
-with open('data/title.principals.tsv', 'r') as tsv_in:
-    tsv_in = csv.reader(tsv_in, delimiter='\t')
+    print('Loading data/title.principals.tsv ...')
+    with open('data/title.principals.tsv', 'r') as tsv_in:
+        tsv_in = csv.reader(tsv_in, delimiter='\t')
 
-    match_count = 0
-    for row in tsv_in:
-        member = None
+        match_count = 0
+        for row in tsv_in:
+            member = None
 
-        if row[0] == 'tconst':
-            continue # The first row contains labels for columns.
-        if row[3] != 'director' and row[3] != 'actor' and row[3] != 'actress' and row[3] != 'self':
-            continue
+            if row[0] == 'tconst':
+                continue # The first row contains labels for columns.
+            if row[3] != 'director' and row[3] != 'actor' and row[3] != 'actress' and row[3] != 'self':
+                continue
 
-        try:
-            film = film_storage[row[0]]
-        except:
-            continue
+            try:
+                film = film_storage[row[0]]
+            except:
+                continue
 
-        try:
-            member = crew_storage[row[2]]
-        except:
-            continue
+            try:
+                member = crew_storage[row[2]]
+            except:
+                continue
 
-        if member['type'] == 'director':
-            film['directorsExperience'] += member['experience']
-            match_count += 1
-        elif member['type'] == 'actor':
-            film['actorsExperience'] += member['experience']
-            match_count += 1
+            if member['type'] == 'director':
+                film['directorsExperience'] += member['experience']
+                match_count += 1
 
-    print(' > Matched ' + str(match_count) + ' crew members to films.')
+            if member['type'] == 'actor':
+                film['actorsExperience'] += member['experience']
+                match_count += 1
 
-print('Loading data/title.ratings.tsv ...')
-with open('data/title.ratings.tsv', 'r') as tsv_in:
-    tsv_in = csv.reader(tsv_in, delimiter='\t')
+        print(' > Matched ' + str(match_count) + ' crew members to films.')
 
-    for row in tsv_in:
-        if row[0] == 'tconst':
-            continue # The first row contains labels for columns.
+    print('Loading data/title.ratings.tsv ...')
+    with open('data/title.ratings.tsv', 'r') as tsv_in:
+        tsv_in = csv.reader(tsv_in, delimiter='\t')
 
-        try:
-            film = film_storage[row[0]]
-        except:
-            continue
-        if not film:
-            continue
+        for row in tsv_in:
+            if row[0] == 'tconst':
+                continue # The first row contains labels for columns.
 
-        film['averageRating'] = row[1]
-        film['numVotes'] = row[2]
+            try:
+                film = film_storage[row[0]]
+            except:
+                continue
+            if not film:
+                continue
 
-print('Dumping film storage to file ...')
-with open('data/films.json', 'w') as films_file:
-    json.dump(film_storage, films_file)
+            if row[1] == '\\N':
+                del film_storage[row[0]]
+                continue
+            if row[2] == '\\N':
+                del film_storage[row[0]]
+                continue
 
-index = 0
-for key in film_storage.keys():
-    index += 1
-    if index >= 25:
-        break
-    print(film_storage[key])
+            film['averageRating'] = float(row[1])
+            film['numVotes'] = int(row[2])
 
-# with open('data/dataset.csv', 'w') as csv_out:
-    # csv_out = csv.writer(csv_out)
+    print('Dumping film storage to file ...')
+    with open('data/films.json', 'w') as films_file:
+        json.dump(film_storage, films_file)
+
+print('Sampling 10,000 films ...')
+random_sample = np.random.choice(list(film_storage.keys()), 10000, replace=False)
+
+print('Writing dataset to data/dataset.csv ...')
+with open('data/dataset.csv', 'w') as csv_out:
+    print(film_storage[random_sample[0]].keys())
+    field_names = list(film_storage[random_sample[0]].keys())
+    writer = csv.DictWriter(csv_out, fieldnames=field_names)
+
+    writer.writeheader()
+
+    for key in random_sample:
+        writer.writerow(film_storage[key])
 

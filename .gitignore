@@ -1,3 +1,10 @@
+# Our excludes
+
+data/*
+!data/dataset.csv
+
+### Github excludes
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

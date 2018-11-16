@@ -37,7 +37,7 @@ GENRES = [
     "War",
     "FilmNoir",
 ]
-
+PROGRESS_NOTIFY_RATE = 10000
 
 def parse_genres(obj, genre_string):
     split_genres = genre_string.split(",")
@@ -71,6 +71,7 @@ except:
                 and row[3] != "actor"
                 and row[3] != "actress"
                 and row[3] != "self"
+                and row[3] != "producer"
             ):
                 continue
 
@@ -81,15 +82,19 @@ except:
 
             if "type" not in member:
                 member["type"] = "actor"
-                if row[3] == "director":
+                if row[3] == "producer":
+                    member["type"] = "producer"
+                elif row[3] == "director":
                     member["type"] = "director"
                 member["experience"] = 1
                 crew_count += 1
+                if (crew_count % PROGRESS_NOTIFY_RATE) == 0:
+                    print(".", end="", flush=True)
             else:
                 member["experience"] += 1
 
             crew_storage[row[2]] = member  # Store in a dictionary indexed by ID.
-        print(" > Parsed " + str(crew_count) + " crew members.")
+        print("\nParsed " + str(crew_count) + " crew members.")
 
     print("Dumping crew storage to file ...")
     with open("data/crew.json", "w") as crew_file:
@@ -117,14 +122,29 @@ except:
             ):
                 continue
 
+            exit = False
+            for col in [0, 1, 2, 4, 5, 7, 8]:
+                if row[col] == "\\N":
+                    exit = True
+                    break
+            if exit: # Skip films with missing data.
+                continue
+
             film["type"] = row[1]
             film["title"] = row[2]
             film["isAdult"] = False
+
             if row[4] == "1":
                 film["isAdult"] = True
+
+            # if row[5] == "\\N":
+                # continue
+            elif int(row[5]) <= (2018 - 50):
+                continue # Skip films older than before color television.
             film["startYear"] = row[5]
-            if row[7] == "\\N":
-                continue  # Null field, skip to next.
+
+            # if row[7] == "\\N":
+                # continue  # Null field, skip to next.
             film["runtimeMinutes"] = int(row[7])
 
             parse_genres(film, row[8])
@@ -132,111 +152,127 @@ except:
             film["numVotes"] = 0
             film["directorsExperience"] = 0
             film["actorsExperience"] = 0
+            film["producersExperience"] = 0
 
             film_storage[row[0]] = film  # Store in a dictionary indexed by ID.
             film_count += 1
-        print(" > Parsed " + str(film_count) + " films.")
+            if (film_count % PROGRESS_NOTIFY_RATE) == 0:
+                print(".", end="", flush=True)
+        print("\nParsed " + str(film_count) + " films.")
 
-    print("Loading data/title.akas.tsv ...")
-    with open("data/title.akas.tsv", "r") as tsv_in:
-        tsv_in = csv.reader(tsv_in, delimiter="\t")
+        print("Loading data/title.akas.tsv ...")
+        with open("data/title.akas.tsv", "r") as tsv_in:
+            tsv_in = csv.reader(tsv_in, delimiter="\t")
 
-        deleted_count = 0
+            deleted_count = 0
 
-        for row in tsv_in:
-            if row[0] == "tconst":
-                continue  # The first row contains labels for columns.
+            for row in tsv_in:
+                if row[0] == "tconst":
+                    continue  # The first row contains labels for columns.
 
-            try:
-                film = film_storage[row[0]]
-            except:
-                continue
-            if not film:
-                continue
+                try:
+                    film = film_storage[row[0]]
+                except:
+                    continue
+                if not film:
+                    continue
 
-            # Delete films which are not originally released in the US.
-            if row[7] == "1" and row[3] != "US":
-                deleted_count += 1
-                del film_storage[row[0]]
-        print(" > Deleted " + str(deleted_count) + " entries not made in the US.")
+                # Delete films which are not originally released in the US.
+                if row[7] == "1" and row[3] != "US":
+                    deleted_count += 1
+                    if (deleted_count % PROGRESS_NOTIFY_RATE) == 0:
+                        print(".", end="", flush=True)
+                    del film_storage[row[0]]
+            print("\nDeleted " + str(deleted_count) + " entries not made in the US.")
 
-    print("Dumping film storage to file ...")
-    with open("data/films.json", "w") as films_file:
-        json.dump(film_storage, films_file)
+        print("Loading data/title.principals.tsv ...")
+        with open("data/title.principals.tsv", "r") as tsv_in:
+            tsv_in = csv.reader(tsv_in, delimiter="\t")
 
-    print("Loading data/title.principals.tsv ...")
-    with open("data/title.principals.tsv", "r") as tsv_in:
-        tsv_in = csv.reader(tsv_in, delimiter="\t")
+            match_count = 0
+            for row in tsv_in:
+                member = None
 
-        match_count = 0
-        for row in tsv_in:
-            member = None
+                if row[0] == "tconst":
+                    continue  # The first row contains labels for columns.
+                if (
+                    row[3] != "director"
+                    and row[3] != "actor"
+                    and row[3] != "actress"
+                    and row[3] != "self"
+                    and row[3] != "producer"
+                ):
+                    continue
 
-            if row[0] == "tconst":
-                continue  # The first row contains labels for columns.
-            if (
-                row[3] != "director"
-                and row[3] != "actor"
-                and row[3] != "actress"
-                and row[3] != "self"
-            ):
-                continue
+                try:
+                    film = film_storage[row[0]]
+                except:
+                    continue
 
-            try:
-                film = film_storage[row[0]]
-            except:
-                continue
+                try:
+                    member = crew_storage[row[2]]
+                except:
+                    continue
 
-            try:
-                member = crew_storage[row[2]]
-            except:
-                continue
+                if member["type"] == "director":
+                    film["directorsExperience"] += member["experience"]
+                    match_count += 1
 
-            if member["type"] == "director":
-                film["directorsExperience"] += member["experience"]
-                match_count += 1
+                if member["type"] == "actor":
+                    film["actorsExperience"] += member["experience"]
+                    match_count += 1
 
-            if member["type"] == "actor":
-                film["actorsExperience"] += member["experience"]
-                match_count += 1
+                if member["type"] == "producer":
+                    film["producersExperience"] += member["experience"]
+                    match_count += 1
 
-        print(" > Matched " + str(match_count) + " crew members to films.")
+                if (match_count % PROGRESS_NOTIFY_RATE) == 0:
+                    print(".", end="", flush=True)
 
-    print("Loading data/title.ratings.tsv ...")
-    with open("data/title.ratings.tsv", "r") as tsv_in:
-        tsv_in = csv.reader(tsv_in, delimiter="\t")
+            print("\nMatched " + str(match_count) + " crew members to films.")
 
-        for row in tsv_in:
-            if row[0] == "tconst":
-                continue  # The first row contains labels for columns.
+        print("Loading data/title.ratings.tsv ...")
+        with open("data/title.ratings.tsv", "r") as tsv_in:
+            tsv_in = csv.reader(tsv_in, delimiter="\t")
 
-            try:
-                film = film_storage[row[0]]
-            except:
-                continue
-            if not film:
-                continue
+            update_count = 0
+            delete_count = 0
+            for row in tsv_in:
+                if row[0] == "tconst":
+                    continue  # The first row contains labels for columns.
 
-            if row[1] == "\\N":
-                del film_storage[row[0]]
-                continue
-            if row[2] == "\\N":
-                del film_storage[row[0]]
-                continue
+                try:
+                    film = film_storage[row[0]]
+                except:
+                    continue
+                if not film:
+                    continue
 
-            film["averageRating"] = float(row[1])
-            film["numVotes"] = int(row[2])
+                if row[1] == "\\N":
+                    del film_storage[row[0]]
+                    deleted_count += 1
+                    continue
+                if row[2] == "\\N" or int(row[2]) == 0:
+                    del film_storage[row[0]]
+                    deleted_count += 1
+                    continue
 
-    print("Dumping film storage to file ...")
-    with open("data/films.json", "w") as films_file:
-        json.dump(film_storage, films_file)
+                film["averageRating"] = float(row[1])
+                film["numVotes"] = int(row[2])
+                update_count += 1
+                if ((update_count + deleted_count) % PROGRESS_NOTIFY_RATE) == 0:
+                    print(".", end="", flush=True)
+            print("\nUpdated " + str(update_count) + " film ratings, and deleted " + str(deleted_count) + " films in the process.")
+
+        print("Dumping film storage to file ...")
+        with open("data/films.json", "w") as films_file:
+            json.dump(film_storage, films_file)
 
 print("Sampling 10,000 films ...")
 random_sample = np.random.choice(list(film_storage.keys()), 10000, replace=False)
 
 print("Writing dataset to data/dataset.csv ...")
 with open("data/dataset.csv", "w") as csv_out:
-    print(film_storage[random_sample[0]].keys())
     field_names = list(film_storage[random_sample[0]].keys())
     writer = csv.DictWriter(csv_out, fieldnames=field_names)
 
@@ -244,3 +280,10 @@ with open("data/dataset.csv", "w") as csv_out:
 
     for key in random_sample:
         writer.writerow(film_storage[key])
+
+print("Writing dataset to data/dataset.json ...")
+with open("data/dataset.json", "w") as json_out:
+    dataset_dict = {}
+    for key in random_sample:
+        dataset_dict[key] = film_storage[key]
+    json.dump(dataset_dict, json_out)

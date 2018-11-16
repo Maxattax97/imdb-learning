@@ -25,6 +25,9 @@ Validates the models using k-folds cross validation.
 ### `visualize.py`
 Produces plots, charts, and graphs to represent the results of the models and give insight to the dataset.
 
+### `collect.sh`
+Downloads all datasets originally from IMDB (listed in `sources.txt`) and `gunzip`s them to the `data/` directory.
+
 ### `data/`
 Contains the unzipped IMDB dataset's `.tsv` files, and the post-processed `dataset.csv` which is ready to be put into the model. IMDB's original dataset is obfuscated via `.gitignore` for purposes of size. Access it at [IMDB's website](https://www.imdb.com/interfaces/).
 

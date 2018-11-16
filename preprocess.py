@@ -47,6 +47,9 @@ def parse_genres(obj, genre_string):
         if genre in split_genres:
             obj["is" + genre] = True
 
+def progress_notifier(count):
+    if ((count) % PROGRESS_NOTIFY_RATE) == 0:
+        print(".", end="", flush=True)
 
 film_storage = {}
 crew_storage = {}
@@ -88,8 +91,7 @@ except:
                     member["type"] = "director"
                 member["experience"] = 1
                 crew_count += 1
-                if (crew_count % PROGRESS_NOTIFY_RATE) == 0:
-                    print(".", end="", flush=True)
+                progress_notifier(crew_count)
             else:
                 member["experience"] += 1
 
@@ -156,8 +158,7 @@ except:
 
             film_storage[row[0]] = film  # Store in a dictionary indexed by ID.
             film_count += 1
-            if (film_count % PROGRESS_NOTIFY_RATE) == 0:
-                print(".", end="", flush=True)
+            progress_notifier(film_count)
         print("\nParsed " + str(film_count) + " films.")
 
         print("Loading data/title.akas.tsv ...")
@@ -180,10 +181,52 @@ except:
                 # Delete films which are not originally released in the US.
                 if row[7] == "1" and row[3] != "US":
                     deleted_count += 1
-                    if (deleted_count % PROGRESS_NOTIFY_RATE) == 0:
-                        print(".", end="", flush=True)
+                    progress_notifier(deleted_count)
                     del film_storage[row[0]]
             print("\nDeleted " + str(deleted_count) + " entries not made in the US.")
+
+        print("Loading data/title.ratings.tsv ...")
+        with open("data/title.ratings.tsv", "r") as tsv_in:
+            tsv_in = csv.reader(tsv_in, delimiter="\t")
+
+            update_count = 0
+            delete_count = 0
+            for row in tsv_in:
+                if row[0] == "tconst":
+                    continue  # The first row contains labels for columns.
+
+                try:
+                    film = film_storage[row[0]]
+                except:
+                    continue
+                if not film:
+                    continue
+
+                if row[1] == "\\N":
+                    progress_notifier(update_count + deleted_count)
+                    del film_storage[row[0]]
+                    deleted_count += 1
+                    continue
+                if row[2] == "\\N" or int(row[2]) == 0:
+                    progress_notifier(update_count + deleted_count)
+                    del film_storage[row[0]]
+                    deleted_count += 1
+                    continue
+
+                film["averageRating"] = float(row[1])
+                film["numVotes"] = int(row[2])
+                update_count += 1
+                progress_notifier(update_count + deleted_count)
+            print("\nUpdated " + str(update_count) + " film ratings, and deleted " + str(deleted_count) + " films in the process.")
+
+        print("Purging films without ratings ...")
+        remove_list = [k for k in film_storage if film_storage[k]["numVotes"] <= 0]
+        purge_count = 0
+        for k in remove_list:
+            progress_notifier(purge_count)
+            del film_storage[k]
+            purge_count += 1
+        print("\nPurged " + str(purge_count) + " films with missing ratings.")
 
         print("Loading data/title.principals.tsv ...")
         with open("data/title.principals.tsv", "r") as tsv_in:
@@ -226,43 +269,9 @@ except:
                     film["producersExperience"] += member["experience"]
                     match_count += 1
 
-                if (match_count % PROGRESS_NOTIFY_RATE) == 0:
-                    print(".", end="", flush=True)
+                progress_notifier(match_count)
 
             print("\nMatched " + str(match_count) + " crew members to films.")
-
-        print("Loading data/title.ratings.tsv ...")
-        with open("data/title.ratings.tsv", "r") as tsv_in:
-            tsv_in = csv.reader(tsv_in, delimiter="\t")
-
-            update_count = 0
-            delete_count = 0
-            for row in tsv_in:
-                if row[0] == "tconst":
-                    continue  # The first row contains labels for columns.
-
-                try:
-                    film = film_storage[row[0]]
-                except:
-                    continue
-                if not film:
-                    continue
-
-                if row[1] == "\\N":
-                    del film_storage[row[0]]
-                    deleted_count += 1
-                    continue
-                if row[2] == "\\N" or int(row[2]) == 0:
-                    del film_storage[row[0]]
-                    deleted_count += 1
-                    continue
-
-                film["averageRating"] = float(row[1])
-                film["numVotes"] = int(row[2])
-                update_count += 1
-                if ((update_count + deleted_count) % PROGRESS_NOTIFY_RATE) == 0:
-                    print(".", end="", flush=True)
-            print("\nUpdated " + str(update_count) + " film ratings, and deleted " + str(deleted_count) + " films in the process.")
 
         print("Dumping film storage to file ...")
         with open("data/films.json", "w") as films_file:

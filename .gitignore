@@ -2,6 +2,7 @@
 
 data/*
 !data/dataset.csv
+!data/dataset.json
 
 ### Github excludes
 

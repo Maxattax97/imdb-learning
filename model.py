@@ -42,6 +42,7 @@ X = data.loc[
         "numVotes",
         "directorsExperience",
         "actorsExperience",
+        "producersExperience"
     ),
 ]
 y = data.loc[:, ("averageRating")]
@@ -59,7 +60,7 @@ model.fit(train_X, train_y)
 predictions = model.predict(test_X)
 correct = 0.0
 for i, prediction in enumerate(predictions):
-    if abs(prediction - test_y.loc[i + split]) < 0.5:
+    if abs(prediction - test_y.loc[i + split]) <= 0.5:
         correct += 1.0
     print("Predictions: {}, Label: {}".format(prediction, test_y.loc[i + split]))
 

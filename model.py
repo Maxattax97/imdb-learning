@@ -49,9 +49,9 @@ zipped = list(zip(X, y))
 random.shuffle(zipped)
 shuffled_X, shuffled_y = zip(*zipped)
 
-split = int(0.8 * len(X))
-train_X, test_X = X[:split], X[split:]
-train_y, test_y = y[:split], y[split:]
+split = int(0.8 * len(shuffled_X))
+train_X, test_X = shuffled_X[:split], shuffled_X[split:]
+train_y, test_y = shuffled_y[:split], shuffled_y[split:]
 
 model = linear_model.LinearRegression(fit_intercept=True)
 
@@ -65,3 +65,6 @@ for i, prediction in enumerate(predictions):
 
 correct = (correct / len(predictions)) * 100
 print("Correct: {}%".format(correct))
+
+
+

@@ -58,12 +58,12 @@ film_storage = {}
 crew_storage = {}
 
 try:
-    with open("data/crew.json", "r") as crew_file:
-        print("Loading cached data/crew.json ...")
+    with open("../dataset/crew.json", "r") as crew_file:
+        print("Loading cached ../dataset/crew.json ...")
         crew_storage = json.load(crew_file)
 except:
-    print("Loading data/title.principals.tsv ...")
-    with open("data/title.principals.tsv", "r") as tsv_in:
+    print("Loading ../dataset/title.principals.tsv ...")
+    with open("../dataset/title.principals.tsv", "r") as tsv_in:
         tsv_in = csv.reader(tsv_in, delimiter="\t")
 
         crew_count = 0
@@ -102,16 +102,16 @@ except:
         print("\nParsed " + str(crew_count) + " crew members.")
 
     print("Dumping crew storage to file ...")
-    with open("data/crew.json", "w") as crew_file:
+    with open("../dataset/crew.json", "w") as crew_file:
         json.dump(crew_storage, crew_file)
 
 try:
-    with open("data/films.json", "r") as films_file:
-        print("Loading cached data/films.json ...")
+    with open("../dataset/films.json", "r") as films_file:
+        print("Loading cached ../dataset/films.json ...")
         film_storage = json.load(films_file)
 except:
-    print("Loading data/title.basics.tsv ...")
-    with open("data/title.basics.tsv", "r") as tsv_in:
+    print("Loading ../dataset/title.basics.tsv ...")
+    with open("../dataset/title.basics.tsv", "r") as tsv_in:
         tsv_in = csv.reader(tsv_in, delimiter="\t")
 
         film_count = 0
@@ -164,8 +164,8 @@ except:
             progress_notifier(film_count)
         print("\nParsed " + str(film_count) + " films.")
 
-        print("Loading data/title.akas.tsv ...")
-        with open("data/title.akas.tsv", "r") as tsv_in:
+        print("Loading ../dataset/title.akas.tsv ...")
+        with open("../dataset/title.akas.tsv", "r") as tsv_in:
             tsv_in = csv.reader(tsv_in, delimiter="\t")
 
             deleted_count = 0
@@ -188,8 +188,8 @@ except:
                     del film_storage[row[0]]
             print("\nDeleted " + str(deleted_count) + " entries not made in the US.")
 
-        print("Loading data/title.ratings.tsv ...")
-        with open("data/title.ratings.tsv", "r") as tsv_in:
+        print("Loading ../dataset/title.ratings.tsv ...")
+        with open("../dataset/title.ratings.tsv", "r") as tsv_in:
             tsv_in = csv.reader(tsv_in, delimiter="\t")
 
             update_count = 0
@@ -237,8 +237,8 @@ except:
             purge_count += 1
         print("\nPurged " + str(purge_count) + " films with missing ratings.")
 
-        print("Loading data/title.principals.tsv ...")
-        with open("data/title.principals.tsv", "r") as tsv_in:
+        print("Loading ../dataset/title.principals.tsv ...")
+        with open("../dataset/title.principals.tsv", "r") as tsv_in:
             tsv_in = csv.reader(tsv_in, delimiter="\t")
 
             match_count = 0
@@ -283,14 +283,14 @@ except:
             print("\nMatched " + str(match_count) + " crew members to films.")
 
         print("Dumping film storage to file ...")
-        with open("data/films.json", "w") as films_file:
+        with open("../dataset/films.json", "w") as films_file:
             json.dump(film_storage, films_file)
 
 print("Sampling 10,000 films ...")
 random_sample = np.random.choice(list(film_storage.keys()), 10000, replace=False)
 
-print("Writing dataset to data/dataset.csv ...")
-with open("data/dataset.csv", "w") as csv_out:
+print("Writing dataset to ../dataset/dataset.csv ...")
+with open("../dataset/dataset.csv", "w") as csv_out:
     field_names = list(film_storage[random_sample[0]].keys())
     writer = csv.DictWriter(csv_out, fieldnames=field_names)
 
@@ -299,8 +299,8 @@ with open("data/dataset.csv", "w") as csv_out:
     for key in random_sample:
         writer.writerow(film_storage[key])
 
-print("Writing dataset to data/dataset.json ...")
-with open("data/dataset.json", "w") as json_out:
+print("Writing dataset to ../dataset/dataset.json ...")
+with open("../dataset/dataset.json", "w") as json_out:
     dataset_dict = {}
     for key in random_sample:
         dataset_dict[key] = film_storage[key]

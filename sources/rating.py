@@ -4,9 +4,9 @@ from sklearn import linear_model, metrics, preprocessing
 import pandas
 import random
 
-#  csv_file = open("data/dataset.csv", "r")
+#  csv_file = open("../dataset/dataset.csv", "r")
 #
-#  data = pandas.read_csv("data/dataset.csv")
+#  data = pandas.read_csv("../dataset/dataset.csv")
 #  print(data)
 
 

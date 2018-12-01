@@ -13,25 +13,25 @@ pip3 install -r ./requirements.txt
 
 ## Overview
 
-### `preprocess.py`
+### `sources/preprocess.py`
 Used for converting IMDB's dataset into a more digestable form for our algorithms. It also reduces the dataset down to 10,000 samples.
 
-### `model.py`
+### `sources/genre.py` and `sources/rating.py`
 Contains the logic to train statistical models to eventually predict movie rating and genre.
 
-### `validate.py`
+### `sources/validate.py`
 Validates the models using k-folds cross validation.
 
-### `visualize.py`
+### `sources/visualize.py`
 Produces plots, charts, and graphs to represent the results of the models and give insight to the dataset.
 
-### `collect.sh`
+### `scripts/collect.sh`
 Downloads all datasets originally from IMDB (listed in `sources.txt`) and `gunzip`s them to the `data/` directory.
 
-### `data/`
+### `dataset/`
 Contains the unzipped IMDB dataset's `.tsv` files, and the post-processed `dataset.csv` which is ready to be put into the model. IMDB's original dataset is obfuscated via `.gitignore` for purposes of size. Access it at [IMDB's website](https://www.imdb.com/interfaces/).
 
-### `requirements.txt`
+### `libraries/requirements.txt`
 Contains a list of packages and their respective versions for usage in Python 3.x virtual environments. Load with `pip3 install -r requirements.txt` after entering a virtual environment. This may be updated using the command `pip3 freeze > requirements.txt`.
 
 ## Contributors

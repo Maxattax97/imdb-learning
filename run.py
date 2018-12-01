@@ -30,15 +30,16 @@ if (not data_csv.is_file()) or (not data_json.is_file()):
     preprocess_needed = True
     print("Collecting dataset from IMDB ...")
     os.chdir("./scripts/")
-    call(["sh", "./scripts/collect.sh"])
+    call(["sh", "collect.sh"])
+    os.chdir("../")
 else:
     print("Pre-processed dataset detected, skipping download ...")
 
 print("Loading program ...")
 os.chdir("./sources/")
-#  import validate
 if preprocess_needed:
     import preprocess
+import validate
 import rating
 import genre
 import visualize

@@ -3,6 +3,7 @@ import mord
 from sklearn import tree, metrics, preprocessing
 import pandas
 import random
+from validate import kfoldscv
 
 #  csv_file = open("../dataset/dataset.csv", "r")
 #
@@ -62,5 +63,8 @@ def train_genres(data):
     #  print("Correct: {}%".format(correct))
     perfect = perfect / len(predictions)
     #  print("Perfect: {}%".format(perfect))
+
+    k = 2
+    accuracy = kfoldscv(model, k, X, y)
 
     return {"strengths": {"feature_d": 0.4, "feature_e": 0.3}, "accuracy": correct}

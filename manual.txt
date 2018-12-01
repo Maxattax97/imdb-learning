@@ -1,4 +1,4 @@
-How to run our code:
+How to Run Our Code:
 You must be using Python 3.x in order to use our project. See the External Libraries section to get your environment set up.
     $ ./run.py
 This will ultimately generate plots in the ./visuals/ folder.

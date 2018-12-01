@@ -6,6 +6,7 @@ data/*
 dataset/*
 !dataset/dataset.csv
 !dataset/dataset.json
+.user-config.json
 
 ### Github excludes
 

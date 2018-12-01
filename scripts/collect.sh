@@ -1,4 +1,4 @@
 #! /bin/bash
 
-wget --directory-prefix=data/ --quiet --show-progress --no-clobber --input-file=sources.txt
-gunzip --verbose --force --keep data/*.gz
+wget --directory-prefix=../dataset/ --quiet --show-progress --no-clobber --input-file=sources.txt
+gunzip --verbose --force --keep ../dataset/*.gz

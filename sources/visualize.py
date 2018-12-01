@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import matplotlib
+matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas
@@ -15,8 +16,8 @@ FIX_LIMITS = True
 IMAGE_DPI = 100
 IMAGE_SIZE = (4, 3)
 
-csv_file = open("data/dataset.csv", "r")
-data = pandas.read_csv("data/dataset.csv")
+csv_file = open("../dataset/dataset.csv", "r")
+data = pandas.read_csv("../dataset/dataset.csv")
 
 # We never care about these.
 data = data.drop(["type", "title", "startYear"], 1)
@@ -82,7 +83,7 @@ def plot_rating_predictor_strength():
 
     if not MEGA_FIGURE:
         plt.savefig(
-            "visuals/rating_predictor_strength.png",
+            "../visuals/rating_predictor_strength.png",
             bbox_inches="tight",
             figsize=IMAGE_SIZE,
             dpi=IMAGE_DPI,
@@ -106,7 +107,7 @@ def plot_genre_predictor_strength():
 
     if not MEGA_FIGURE:
         plt.savefig(
-            "visuals/genre_predictor_strength.png",
+            "../visuals/genre_predictor_strength.png",
             bbox_inches="tight",
             figsize=IMAGE_SIZE,
             dpi=IMAGE_DPI,
@@ -129,7 +130,7 @@ def plot_rating_accuracy_quantity_genre():
 
     if not MEGA_FIGURE:
         plt.savefig(
-            "visuals/rating_accuracy_quantity_genre.png",
+            "../visuals/rating_accuracy_quantity_genre.png",
             bbox_inches="tight",
             figsize=IMAGE_SIZE,
             dpi=IMAGE_DPI,
@@ -151,7 +152,7 @@ def plot_rating_accuracy_sample_size():
 
     if not MEGA_FIGURE:
         plt.savefig(
-            "visuals/rating_accuracy_sample_size.png",
+            "../visuals/rating_accuracy_sample_size.png",
             bbox_inches="tight",
             figsize=IMAGE_SIZE,
             dpi=IMAGE_DPI,
@@ -173,7 +174,7 @@ def plot_rating_accuracy_wwo_genre():
 
     if not MEGA_FIGURE:
         plt.savefig(
-            "visuals/rating_accuracy_wwo_genre.png",
+            "../visuals/rating_accuracy_wwo_genre.png",
             bbox_inches="tight",
             figsize=IMAGE_SIZE,
             dpi=IMAGE_DPI,
@@ -195,7 +196,7 @@ def plot_genre_accuracy_sample_size():
 
     if not MEGA_FIGURE:
         plt.savefig(
-            "visuals/genre_accuracy_sample_size.png",
+            "../visuals/genre_accuracy_sample_size.png",
             bbox_inches="tight",
             figsize=IMAGE_SIZE,
             dpi=IMAGE_DPI,
@@ -218,7 +219,7 @@ def plot_genre_accuracy_quantity_genre():
 
     if not MEGA_FIGURE:
         plt.savefig(
-            "visuals/genre_accuracy_quantity_genre.png",
+            "../visuals/genre_accuracy_quantity_genre.png",
             bbox_inches="tight",
             figsize=IMAGE_SIZE,
             dpi=IMAGE_DPI,
@@ -253,12 +254,11 @@ def plot_rating_numvotes():
 
     if not MEGA_FIGURE:
         plt.savefig(
-            "visuals/rating_votes.png",
+            "../visuals/rating_votes.png",
             bbox_inches="tight",
             figsize=IMAGE_SIZE,
             dpi=IMAGE_DPI,
         )
-
 
 plots_to_generate = [
     plot_rating_numvotes,
@@ -279,7 +279,7 @@ if MEGA_FIGURE:
         func()
         i += 1
     plt.tight_layout()
-    plt.savefig("visuals/all.png", figsize=IMAGE_SIZE, dpi=IMAGE_DPI)
+    plt.savefig("../visuals/all.png", figsize=IMAGE_SIZE, dpi=IMAGE_DPI)
     plt.show()
 
 plt.figure(2)

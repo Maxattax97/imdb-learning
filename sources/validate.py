@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
-from linreg import run as linreg
+#from linreg import run as linreg
 
 # Input: number of folds k
 # numpy matrix X of features, with n rows (samples), d columns (features)
@@ -27,7 +27,7 @@ def run(k,X,y):
         S = np.arange(0, len(X)-1)
 
         S = np.setdiff1d(S, T)
-        thetaPrime = linreg(X[S], y[S])
+        #thetaPrime = linreg(X[S], y[S])
 
         val = 0
         for t in range(0, len(T)):
@@ -37,3 +37,6 @@ def run(k,X,y):
         z[i] = (val*1.0)/(len(T)*1.0)
 
     return z
+
+def kfoldscv(model, k, X, y):
+    pass

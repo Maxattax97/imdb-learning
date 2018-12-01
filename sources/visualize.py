@@ -259,7 +259,6 @@ def plot_rating_numvotes():
             dpi=IMAGE_DPI,
         )
 
-
 plots_to_generate = [
     plot_rating_numvotes,
     plot_rating_predictor_strength,

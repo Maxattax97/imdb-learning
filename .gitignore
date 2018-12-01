@@ -3,6 +3,9 @@
 data/*
 !data/dataset.csv
 !data/dataset.json
+dataset/*
+!dataset/dataset.csv
+!dataset/dataset.json
 
 ### Github excludes
 

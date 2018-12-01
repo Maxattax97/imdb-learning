@@ -1,0 +1,11 @@
+How to run our code:
+You must be using Python 3.x in order to use our project. See the External Libraries section to get your environment set up.
+    $ ./main.py
+This will generate plots in the ./visuals/ folder.
+
+External Libraries:
+We use a few Python libraries. To fetch them, set up a Python 3.x virtual environment:
+    $ python3 -m venv env
+    $ source ./env/bin/activate # You must run this in every fresh session.
+    $ pip3 install -r ./libraries/requirements.txt
+

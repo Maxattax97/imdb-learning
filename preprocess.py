@@ -39,6 +39,7 @@ GENRES = [
 ]
 PROGRESS_NOTIFY_RATE = 10000
 
+
 def parse_genres(obj, genre_string):
     split_genres = genre_string.split(",")
 
@@ -47,9 +48,11 @@ def parse_genres(obj, genre_string):
         if genre in split_genres:
             obj["is" + genre] = True
 
+
 def progress_notifier(count):
     if ((count) % PROGRESS_NOTIFY_RATE) == 0:
         print(".", end="", flush=True)
+
 
 film_storage = {}
 crew_storage = {}
@@ -129,7 +132,7 @@ except:
                 if row[col] == "\\N":
                     exit = True
                     break
-            if exit: # Skip films with missing data.
+            if exit:  # Skip films with missing data.
                 continue
 
             film["type"] = row[1]
@@ -140,13 +143,13 @@ except:
                 film["isAdult"] = True
 
             # if row[5] == "\\N":
-                # continue
+            # continue
             elif int(row[5]) <= (2018 - 50):
-                continue # Skip films older than before color television.
+                continue  # Skip films older than before color television.
             film["startYear"] = row[5]
 
             # if row[7] == "\\N":
-                # continue  # Null field, skip to next.
+            # continue  # Null field, skip to next.
             film["runtimeMinutes"] = int(row[7])
 
             parse_genres(film, row[8])
@@ -217,7 +220,13 @@ except:
                 film["numVotes"] = int(row[2])
                 update_count += 1
                 progress_notifier(update_count + deleted_count)
-            print("\nUpdated " + str(update_count) + " film ratings, and deleted " + str(deleted_count) + " films in the process.")
+            print(
+                "\nUpdated "
+                + str(update_count)
+                + " film ratings, and deleted "
+                + str(deleted_count)
+                + " films in the process."
+            )
 
         print("Purging films without ratings ...")
         remove_list = [k for k in film_storage if film_storage[k]["numVotes"] <= 0]

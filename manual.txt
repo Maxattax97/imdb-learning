@@ -1,7 +1,19 @@
 How to run our code:
 You must be using Python 3.x in order to use our project. See the External Libraries section to get your environment set up.
-    $ ./main.py
-This will generate plots in the ./visuals/ folder.
+    $ ./run.py
+This will ultimately generate plots in the ./visuals/ folder.
+
+The provided run.py will also automate downloading the IMDB dataset and associated pre-processing to produce the needed files.
+If you delete the provided ./dataset.csv and ./dataset.json files, it will trigger download of the full dataset and cleaning.
+Note that this is a lengthy process and requires a somewhat significant amount of memory.
+
+Speeding Up:
+Visualizations generate an interactive window with all plots as well as static PNG images.
+To speed up the process, you can disable viewing all plots and instead view the static images at your leisure.
+To do so, find:
+    MEGA_FIGURE = True
+near the top of ./sources/visualize.py and set it to False.
+This is not a very slow process with it included by default, however.
 
 External Libraries:
 We use a few Python libraries. To fetch them, set up a Python 3.x virtual environment:

@@ -11,44 +11,9 @@ import random
 
 
 def train_rating(data):
-    X = data.loc[
-        :,
-        (
-            "isAdult",
-            "runtimeMinutes",
-            "isDrama",
-            "isComedy",
-            "isShort",
-            "isDocumentary",
-            "isTalkShow",
-            "isRomance",
-            "isFamily",
-            "isNews",
-            "isAnimation",
-            "isRealityTV",
-            "isMusic",
-            "isCrime",
-            "isAdventure",
-            "isGameShow",
-            "isMystery",
-            "isSport",
-            "isFantasy",
-            "isHorror",
-            "isThriller",
-            "isSciFi",
-            "isHistory",
-            "isBiography",
-            "isMusical",
-            "isWestern",
-            "isWar",
-            "isFilmNoir",
-            "numVotes",
-            "directorsExperience",
-            "actorsExperience",
-            "producersExperience",
-        ),
-    ]
+    X = data.drop("averageRating", 1)
     y = data.loc[:, ("averageRating")]
+    
     zipped = list(zip(X, y))
     random.shuffle(zipped)
     shuffled_X, shuffled_y = zip(*zipped)

@@ -21,38 +21,18 @@ def train_genres(data):
             "averageRating",
         ),
     ]
-    y = data.loc[
-        :,
-        (
-            "isAdult",
-            "isDrama",
-            "isComedy",
-            "isShort",
-            "isDocumentary",
-            "isTalkShow",
-            "isRomance",
-            "isFamily",
-            "isNews",
-            "isAnimation",
-            "isRealityTV",
-            "isMusic",
-            "isCrime",
-            "isAdventure",
-            "isGameShow",
-            "isMystery",
-            "isSport",
-            "isFantasy",
-            "isHorror",
-            "isThriller",
-            "isSciFi",
-            "isHistory",
-            "isBiography",
-            "isMusical",
-            "isWestern",
-            "isWar",
-            "isFilmNoir",
-        ),
-    ]
+    y = data.drop(
+        [
+            "runtimeMinutes",
+            "numVotes",
+            "directorsExperience",
+            "actorsExperience",
+            "producersExperience",
+            "averageRating",
+        ],
+        1,
+    )
+    
     zipped = list(zip(X, y))
     random.shuffle(zipped)
     shuffled_X, shuffled_y = zip(*zipped)
@@ -74,14 +54,13 @@ def train_genres(data):
         #  print(i)
         #  print("Predict:\t{}".format(list(prediction.astype(int))))
         #  print(
-            #  "Labels: \t{}".format(list(test_y.loc[i + split].values.flatten().astype(int)))
+        #  "Labels: \t{}".format(list(test_y.loc[i + split].values.flatten().astype(int)))
         #  )
         if differences == 0:
             perfect += 1
-    correct = (correct / len(predictions))
+    correct = correct / len(predictions)
     #  print("Correct: {}%".format(correct))
-    perfect = (perfect / len(predictions))
+    perfect = perfect / len(predictions)
     #  print("Perfect: {}%".format(perfect))
 
     return {"strengths": {"feature_d": 0.4, "feature_e": 0.3}, "accuracy": correct}
-

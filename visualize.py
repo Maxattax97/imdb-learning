@@ -14,6 +14,9 @@ plt.style.use("seaborn")
 csv_file = open("data/dataset.csv", "r")
 data = pandas.read_csv("data/dataset.csv")
 
+# We never care about these.
+data = data.drop(["type", "title", "startYear"], 1)
+
 sample_10k = data.sample(frac=1).reset_index(drop=True)
 sample_5k = data.sample(n=5000).reset_index(drop=True)
 sample_2k = data.sample(n=2000).reset_index(drop=True)
@@ -24,13 +27,13 @@ genre_only = sample_10k.drop(
         "numVotes",
         "directorsExperience",
         "actorsExperience",
-        "averageRating",
+        # We need this one.
+        #  "averageRating",
     ],
     1,
 )
 genre_10 = sample_10k.drop(
     [
-        "isRealityTV",
         "isMusic",
         "isCrime",
         "isAdventure",
@@ -51,9 +54,11 @@ genre_10 = sample_10k.drop(
     1,
 )
 genre_5 = genre_10.drop(
-    ["isTalkShow", "isRomance", "isFamily", "isNews", "isAnimation"], 1
+    ["isRomance", "isFamily", "isNews", "isAnimation", "isRealityTV"], 1
 )
-genre_2 = genre_5.drop(["isComedy", "isShort", "isDocumentary"], 1)
+genre_2 = genre_5.drop(["isTalkShow", "isShort", "isDocumentary"], 1)
+genre_none = genre_2.drop(["isDrama", "isComedy"], 1)
+
 
 # Plots of predictor strength for rating against each feature
 plt.title("Rating Prediction Strength by Feature")
@@ -120,4 +125,53 @@ axes = plt.gca()
 axes.set_ylim([0, 1])
 
 plt.savefig("visuals/rating_accuracy_sample_size.png", bbox_inches="tight")
+plt.clf()
+
+
+
+# Plots of accuracy predicting rating with and without non-genre features
+plt.title("Accuracy Predicting Rating With and Without Non-Genre Features")
+plt.xlabel("Features")
+plt.ylabel("Accuracy")
+plt.bar("All Features", rating.train_rating(sample_10k)["accuracy"])
+plt.bar("Only Genres", rating.train_rating(genre_only)["accuracy"])
+plt.bar("Only Non-Genres", rating.train_rating(genre_none)["accuracy"])
+
+axes = plt.gca()
+axes.set_ylim([0, 1])
+
+plt.savefig("visuals/rating_accuracy_wwo_genre.png", bbox_inches="tight")
+plt.clf()
+
+
+
+# Plots of accuracy predicting genre with 10k, 5k, and 2k samples
+plt.title("Accuracy Predicting Genre by Sample Size")
+plt.xlabel("Sample Size")
+plt.ylabel("Accuracy")
+plt.bar("10k", genre.train_genres(sample_10k)["accuracy"])
+plt.bar("5k", genre.train_genres(sample_5k)["accuracy"])
+plt.bar("2k", genre.train_genres(sample_2k)["accuracy"])
+
+axes = plt.gca()
+axes.set_ylim([0, 1])
+
+plt.savefig("visuals/genre_accuracy_sample_size.png", bbox_inches="tight")
+plt.clf()
+
+
+
+# Plots of accuracy predicting genre with all (27), 10, 5, and 2 genres
+plt.title("Accuracy Predicting Genre by Quantity of Genres")
+plt.xlabel("Quantity of Genres")
+plt.ylabel("Accuracy")
+plt.bar("27", genre.train_genres(sample_10k)["accuracy"])
+plt.bar("10", genre.train_genres(genre_10)["accuracy"])
+plt.bar("5", genre.train_genres(genre_5)["accuracy"])
+plt.bar("2", genre.train_genres(genre_2)["accuracy"])
+
+axes = plt.gca()
+axes.set_ylim([0, 1])
+
+plt.savefig("visuals/genre_accuracy_quantity_genre.png", bbox_inches="tight")
 plt.clf()

@@ -1,39 +1,32 @@
 #!/usr/bin/env python3
 import numpy as np
-from linreg import run as linreg
+import random
 
 # Input: number of folds k
 # numpy matrix X of features, with n rows (samples), d columns (features)
 # numpy vector y of scalar values, with n rows (samples), 1 column
 # Output: numpy vector z of k rows, 1 column
-def run(k,X,y):
-    T = np.zeros(k)
-    z = np.zeros((k,1))
-    for i in range(0, k):
+def run(model,k,X,y):
+    
+    z = np.zeros((n,1))
+    random.shuffle(X)
+    random.shuffle(y)
 
-        lower = ((len(X) * 1.0 * i)/k) * 1.0
-        #print(lower)
-        lower = np.floor(lower)
-        lower = lower.astype(int)
+    for i in range(k):
+        all_except_i = range(i) + range(i+1, n)
+        X_train = X[all_except_i]
+        Y_train = y[all_except_i]
 
-        upper = ((len(X) * (i+1.0))/k)-1.0
-        #print(upper)
-        upper = np.floor(upper)
-        upper = upper.astype(int)
+        model.fit(X_train, Y_train)
 
-        T = np.arange(lower, upper+1)
-        T = T.astype(int)
-        #print(T)
-        S = np.arange(0, len(X)-1)
+        predictions = model.predict(X[i])
+        print(predictions)
 
-        S = np.setdiff1d(S, T)
-        thetaPrime = linreg(X[S], y[S])
+        correct = 0.0
+        for prediction in enumerate(predictions):
+            if prediction == y[i]:
+                correct += 1
 
-        val = 0
-        for t in range(0, len(T)):
-            val += (y[T[t]] - np.dot(thetaPrime.reshape(len(thetaPrime)), X[T[t]])) ** 2
-            #print(val)
-
-        z[i] = (val*1.0)/(len(T)*1.0)
+        z[i] = correct / len(predictions)
 
     return z

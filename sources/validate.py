@@ -14,7 +14,7 @@ def kfoldscv(model,k,X,y):
     X = X.reshape(len(X), len(X[0]) if len(X[0]) > 0 else 1)
     y = y.values
     y = np.asarray(y)
-    #y = y.reshape(len(y), len(y[0]) if len(y.shape) > 1 else 1)
+    y = y.reshape(len(y), len(y[0]) if len(y.shape) > 1 else 1)
     print(y)
     print(X.shape)
     print(y.shape)

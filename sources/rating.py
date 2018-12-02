@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import mord
-from sklearn import linear_model, metrics, preprocessing
+from sklearn import linear_model, metrics, preprocessing, feature_selection
 from sklearn import svm
 import pandas
 import random
@@ -26,12 +26,12 @@ def train_rating(data):
     train_y, test_y = y[:split], y[split:]
 
     model = linear_model.LinearRegression(fit_intercept=True)
-    #model = svm.SVR(kernel="linear", gamma="auto")
-
+    
     k = 3
     z = kfoldscv(model, k, X, y)
 
     model.fit(train_X, train_y)
+
     predictions = model.predict(test_X)
     correct = 0.0
     for i, prediction in enumerate(predictions):
@@ -41,6 +41,10 @@ def train_rating(data):
 
     correct = correct / len(predictions)
 
+    #  f_values, p_values= feature_selection.f_regression(X, y)
     coef = model.coef_
     strengths = {feature:abs(coef[i]) for i, feature in enumerate(X.columns.tolist())}
+    #  print("F Values", f_values)
+    #  print("P Values", p_values)
+    #  strengths = {feature:p_values[i] for i, feature in enumerate(X.columns.tolist())}
     return {"strengths": strengths, "accuracy": sum(z)/len(z)}

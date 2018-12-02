@@ -252,7 +252,7 @@ def plot_genre_accuracy_quantity_genre():
 def plot_rating_numvotes():
     plt.title("Rating vs. Number of Votes")
     plt.xlabel("Rating")
-    plt.ylabel("Number of Votes")
+    plt.ylabel("Normalized of Votes")
     scatter_data = {
         "rating": sample_10k["averageRating"].tolist(),
         "votes": sample_10k["numVotes"].tolist(),

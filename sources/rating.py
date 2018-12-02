@@ -4,6 +4,8 @@ from sklearn import linear_model, metrics, preprocessing
 import pandas
 import random
 
+from validate import kfoldscv
+
 #  csv_file = open("../dataset/dataset.csv", "r")
 #
 #  data = pandas.read_csv("../dataset/dataset.csv")
@@ -23,6 +25,9 @@ def train_rating(data):
     train_y, test_y = y[:split], y[split:]
 
     model = linear_model.LinearRegression(fit_intercept=True)
+
+    k = 3
+    kfoldscv(model, k, X, y)
 
     model.fit(train_X, train_y)
     predictions = model.predict(test_X)

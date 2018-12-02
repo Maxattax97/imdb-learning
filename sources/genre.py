@@ -43,7 +43,7 @@ def train_genres(data):
     train_y, test_y = y[:split], y[split:]
 
     model = tree.DecisionTreeClassifier()
-    k = 3
+    k = 10
     accuracy = kfoldscv(model, k, X, y)
 
     model.fit(train_X, train_y)

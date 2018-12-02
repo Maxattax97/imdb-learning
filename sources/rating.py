@@ -27,7 +27,7 @@ def train_rating(data):
 
     model = linear_model.LinearRegression(fit_intercept=True)
     
-    k = 3
+    k = 10
     z = kfoldscv(model, k, X, y)
 
     model.fit(train_X, train_y)

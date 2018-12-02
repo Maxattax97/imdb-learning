@@ -28,7 +28,7 @@ def train_rating(data):
     model = linear_model.LinearRegression(fit_intercept=True)
     model = svm.SVR(kernel="linear", gamma="auto")
 
-    k = 10
+    k = 3
     z = kfoldscv(model, k, X, y)
 
     model.fit(train_X, train_y)

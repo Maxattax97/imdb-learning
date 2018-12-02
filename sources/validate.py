@@ -72,7 +72,7 @@ def kfoldscv(model,k,X,y):
 
         correct = 0.0
         for j, prediction in enumerate(predictions):
-            if not any(abs(prediction - Y_test[(j+i) - 1])):
+            if not any(abs(prediction - Y_test[j])):
                 correct += 1
             if j % 100 == 0:
                 pass

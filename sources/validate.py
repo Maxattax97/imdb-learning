@@ -14,7 +14,7 @@ def kfoldscv(model,k,X,y):
     X = X.reshape(len(X), len(X[0]) if len(X[0]) > 0 else 1)
     y = y.values
     y = np.asarray(y)
-    y = y.reshape(len(y), len(y[0]) if len(y.shape) > 1 else 1)
+    #y = y.reshape(len(y), len(y[0]) if len(y.shape) > 1 else 1)
     print(y)
     print(X.shape)
     print(y.shape)
@@ -69,23 +69,21 @@ def kfoldscv(model,k,X,y):
 
         print("X_Train: " + str(X_train.shape))
         print("Y_train: " + str(Y_train.shape))
-        model.fit(X_train, Y_train)
+        model.fit(X_train, np.atleast_1d(Y_train))
 
         print("X_Test: " + str(X_test.shape))
         print("Y_test: " + str(Y_test.shape))
-        predictions = model.predict(X_test)
+        predictions = np.atleast_1d(model.predict(X_test))
+
 
         correct = 0.0
         for j, prediction in enumerate(predictions):
 #            print(prediction)
 #            print(Y_test[(j+i) - 1])
-            if len(y[0]) > 1 and not any(abs(prediction - Y_test[j])):
-                if j % 1000:
-                    print("genre")
-                correct += 1
-            elif abs(prediction[0] - Y_test[j][0]) < 0.5:
-                if j % 1000:
-                    print("rating")
+            if len(y[0]) > 1:
+                if not any(abs(prediction - Y_test[j])):
+                    correct += 1
+            elif abs(prediction - Y_test[j]) < 0.5:
                 correct += 1
             if j % 100 == 0:
                 pass

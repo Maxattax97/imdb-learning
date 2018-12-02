@@ -43,6 +43,8 @@ def train_genres(data):
     train_y, test_y = y[:split], y[split:]
 
     model = tree.DecisionTreeClassifier()
+    k = 10
+    accuracy = kfoldscv(model, k, X, y)
 
     model.fit(train_X, train_y)
     predictions = model.predict(test_X)
@@ -64,7 +66,7 @@ def train_genres(data):
     perfect = perfect / len(predictions)
     #  print("Perfect: {}%".format(perfect))
 
-    k = 2
-    accuracy = kfoldscv(model, k, X, y)
 
-    return {"strengths": {"feature_d": 0.4, "feature_e": 0.3}, "accuracy": correct}
+    coef = model.feature_importances_
+    strengths = {feature:abs(coef[i]) for i, feature in enumerate(X.columns.tolist())}
+    return {"strengths": strengths, "accuracy": sum(accuracy)/len(accuracy)}

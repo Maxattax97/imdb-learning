@@ -4,7 +4,7 @@ You must be using Python 3.x in order to use our project. See the External Libra
 This will ultimately generate plots in the ./visuals/ folder.
 
 The provided run.py will also automate downloading the IMDB dataset and associated pre-processing to produce the needed files.
-If you delete the provided ./dataset.csv and ./dataset.json files, it will trigger download of the full dataset and cleaning.
+If you delete the provided ./dataset/dataset.csv and ./dataset/dataset.json files, it will trigger download of the full dataset and cleaning.
 Note that this is a lengthy process and requires a somewhat significant amount of memory.
 
 Speeding Up:

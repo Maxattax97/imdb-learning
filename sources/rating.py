@@ -41,10 +41,6 @@ def train_rating(data):
 
     correct = correct / len(predictions)
 
-    #  f_values, p_values= feature_selection.f_regression(X, y)
     coef = model.coef_
     strengths = {feature:abs(coef[i]) for i, feature in enumerate(X.columns.tolist())}
-    #  print("F Values", f_values)
-    #  print("P Values", p_values)
-    #  strengths = {feature:p_values[i] for i, feature in enumerate(X.columns.tolist())}
     return {"strengths": strengths, "accuracy": sum(z)/len(z)}

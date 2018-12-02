@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import matplotlib
+
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas
 import random
+from sklearn import preprocessing
 
 import rating
 import genre
@@ -12,12 +14,27 @@ import genre
 plt.style.use("seaborn")
 
 MEGA_FIGURE = True
-FIX_LIMITS = True
+FIX_LIMITS = False 
 IMAGE_DPI = 100
 IMAGE_SIZE = (4, 3)
 
 csv_file = open("../dataset/dataset.csv", "r")
 data = pandas.read_csv("../dataset/dataset.csv")
+
+
+def normalize_column(colName):
+    col_values = data[[colName]].values.astype(float)
+    col_values_scaled = preprocessing.MinMaxScaler().fit_transform(col_values)
+    data[colName] = col_values_scaled
+
+
+normalize_column("runtimeMinutes")
+normalize_column("numVotes")
+normalize_column("directorsExperience")
+normalize_column("actorsExperience")
+normalize_column("producersExperience")
+
+print(data)
 
 # We never care about these.
 data = data.drop(["type", "title", "startYear"], 1)
@@ -75,7 +92,10 @@ def plot_rating_predictor_strength():
     result = rating.train_rating(sample_10k)["strengths"]
 
     for key, value in result.items():
+        print(key, value)
         plt.bar(key, value)
+
+    plt.xticks(rotation=90)
 
     if FIX_LIMITS:
         axes = plt.gca()
@@ -99,7 +119,10 @@ def plot_genre_predictor_strength():
     result = genre.train_genres(sample_10k)["strengths"]
 
     for key, value in result.items():
+        print(key, value)
         plt.bar(key, value)
+
+    plt.xticks(rotation=45)
 
     if FIX_LIMITS:
         axes = plt.gca()
@@ -239,7 +262,7 @@ def plot_rating_numvotes():
 
     actor_sum = max(scatter_data["size"])
     scatter_data["size"] = [float(i) / actor_sum for i in scatter_data["size"]]
-    scatter_data["size"] = [x * 700 for x in scatter_data["size"]]
+    scatter_data["size"] = [x * 500 for x in scatter_data["size"]]
 
     plt.scatter(
         "rating", "votes", s="size", c="actors", cmap="viridis", data=scatter_data
@@ -247,10 +270,10 @@ def plot_rating_numvotes():
     cbar = plt.colorbar()
     cbar.set_label("Actor Experience")
 
-    if FIX_LIMITS:
-        axes = plt.gca()
-        axes.set_xlim([3, 9])
-        axes.set_ylim([-1000, 60000])
+    #  if FIX_LIMITS:
+        #  axes = plt.gca()
+        #  axes.set_xlim([3, 9])
+        #  axes.set_ylim([-1000, 60000])
 
     if not MEGA_FIGURE:
         plt.savefig(
@@ -259,6 +282,7 @@ def plot_rating_numvotes():
             figsize=IMAGE_SIZE,
             dpi=IMAGE_DPI,
         )
+
 
 plots_to_generate = [
     plot_rating_numvotes,
